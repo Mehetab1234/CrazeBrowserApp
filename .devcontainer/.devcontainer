@@ -1,0 +1,16 @@
+{
+  "name": "Android Development",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "settings": {
+    "java.home": "/usr/lib/jvm/java-11-openjdk",
+    "terminal.integrated.shell.linux": "/bin/bash"
+  },
+  "extensions": [
+    "vscjava.vscode-java-pack",
+    "redhat.vscode-xml",
+    "vscjava.vscode-maven",
+    "gradle.vscode-gradle"
+  ]
+}
