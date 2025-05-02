@@ -10,28 +10,49 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    # Step 1: Checkout code from the repository
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Android SDK
-      uses: reactivecircus/android-sdk@v2  # or the appropriate available version
-      with:
-        api-level: 30
-        build-tools: 30.0.3
-
+    # Step 2: Install necessary dependencies (Java, Gradle, etc.)
     - name: Install dependencies
       run: |
-        sudo apt-get install openjdk-11-jdk gradle unzip
-        gradle --version
+        sudo apt-get update
+        sudo apt-get install -y openjdk-11-jdk gradle unzip wget
 
+    # Step 3: Download and unzip CrazeBrowser zip file
+    - name: Unzip CrazeBrowser app
+      run: |
+        mkdir -p $HOME/CrazeBrowserApp
+        wget https://github.com/Mehetab1234/CrazeBrowserApp/archive/refs/heads/main.zip -O $HOME/CrazeBrowserApp.zip
+        unzip $HOME/CrazeBrowserApp.zip -d $HOME
+        mv $HOME/CrazeBrowserApp-main $HOME/CrazeBrowserApp
+
+    # Step 4: Install Android SDK and tools
+    - name: Download and Install Android SDK
+      run: |
+        mkdir -p $HOME/Android/Sdk
+        cd $HOME/Android/Sdk
+        wget https://dl.google.com/android/repository/commandlinetools-linux-6609375_latest.zip
+        unzip commandlinetools-linux-6609375_latest.zip
+        rm commandlinetools-linux-6609375_latest.zip
+
+    # Step 5: Install Android SDK packages (API level 30 and build tools)
+    - name: Install SDK packages
+      run: |
+        yes | $HOME/Android/Sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android/Sdk --update
+        yes | $HOME/Android/Sdk/cmdline-tools/bin/sdkmanager --sdk_root=$HOME/Android/Sdk "platforms;android-30" "build-tools;30.0.3"
+
+    # Step 6: Build APK using Gradle
     - name: Build APK
       run: |
-        cd CrazeBrowserApp
+        cd $HOME/CrazeBrowserApp
         ./gradlew clean
         ./gradlew assembleDebug
 
-    - name: Upload APK
+    # Step 7: Upload the APK as an artifact
+    - name: Upload APK as artifact
       uses: actions/upload-artifact@v3
       with:
         name: CrazeBrowser-APK
-        path: CrazeBrowserApp/app/build/outputs/apk/debug/app-debug.apk
+        path: $HOME/CrazeBrowserApp/app/build/outputs/apk/debug/app-debug.apk
