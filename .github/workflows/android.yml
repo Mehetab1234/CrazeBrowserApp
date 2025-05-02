@@ -1,44 +1,37 @@
-name: Build and Create APK
+name: Build APK
 
 on:
   push:
     branches:
-      - main  # or the branch where your project resides
+      - main
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # Step 1: Checkout the repository to the runner
-    - name: Checkout repository
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    # Step 2: Install required tools
-    - name: Install unzip and JDK 17
-      run: |
-        sudo apt-get install -y unzip
-        sudo apt-get install -y openjdk-17-jdk
+    - name: Set up Android SDK
+      uses: reactivecircus/android-sdk@v3
+      with:
+        api-level: 30
+        build-tools: 30.0.3
 
-    # Step 3: Unzip project files (if the zip file is in the repo)
-    - name: Unzip project files
+    - name: Install dependencies
       run: |
-        unzip -o CrazeBrowserApp.zip -d CrazeBrowserApp
+        sudo apt-get install openjdk-11-jdk gradle unzip
+        gradle --version
 
-    # Step 4: Change directory to the project
-    - name: Change directory
+    - name: Build APK
       run: |
         cd CrazeBrowserApp
-
-    # Step 5: Set up Gradle and Build APK
-    - name: Set up Gradle and Build APK
-      run: |
         ./gradlew clean
         ./gradlew assembleDebug
 
-    # Step 6: Upload APK
     - name: Upload APK
-      uses: actions/upload-artifact@v2  # Use v2 instead of v3
+      uses: actions/upload-artifact@v3
       with:
         name: CrazeBrowser-APK
         path: CrazeBrowserApp/app/build/outputs/apk/debug/app-debug.apk
