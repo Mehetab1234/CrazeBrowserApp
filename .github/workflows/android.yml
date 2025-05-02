@@ -20,7 +20,7 @@ jobs:
         sudo apt-get install -y unzip
         sudo apt-get install -y openjdk-17-jdk
 
-    # Step 3: Unzip the project files (if the zip file is in the repo)
+    # Step 3: Unzip project files (if the zip file is in the repo)
     - name: Unzip project files
       run: |
         unzip -o CrazeBrowserApp.zip -d CrazeBrowserApp
@@ -30,15 +30,15 @@ jobs:
       run: |
         cd CrazeBrowserApp
 
-    # Step 5: Set up Gradle
+    # Step 5: Set up Gradle and Build APK
     - name: Set up Gradle and Build APK
       run: |
         ./gradlew clean
         ./gradlew assembleDebug
 
-    # Step 6: Upload the APK artifact
+    # Step 6: Upload APK
     - name: Upload APK
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2  # Use v2 instead of v3
       with:
         name: CrazeBrowser-APK
         path: CrazeBrowserApp/app/build/outputs/apk/debug/app-debug.apk
